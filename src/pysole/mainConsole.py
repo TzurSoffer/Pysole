@@ -392,7 +392,7 @@ class InteractiveConsoleText(StyledTextWindow):
             self.after(0, _add)
         else:
             _add()
-    
+
     def executeCommandThreaded(self, command, addPrompt=True):
         """Execute a command in a separate thread."""
         try:

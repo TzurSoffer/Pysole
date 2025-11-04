@@ -6,7 +6,8 @@ from pygments.styles import get_style_by_name
 class StyledTextWindow(tk.Text):
     def __init__(self, master, theme, font, **kwargs):
         super().__init__(master, **kwargs)
-       
+        self.configure(font=(font["FONT"], font["FONT_SIZE"]))  #< default
+
         # Syntax highlighting setup
         self.lexer = PythonLexer()
         self.style = get_style_by_name(theme["LEXER_STYLE"])
@@ -16,10 +17,10 @@ class StyledTextWindow(tk.Text):
     def _setupTags(self, theme, font):
         """Configure text tags for different output types."""
         self.tag_configure("prompt", foreground=theme["PROMPT"], font=(font["FONT"], font["FONT_SIZE"], "bold"))
-        self.tag_configure("output", foreground=theme["OUTPUT"], font=(font["FONT"], font["FONT_SIZE"]))
-        self.tag_configure("error", foreground=theme["ERROR"], font=(font["FONT"], font["FONT_SIZE"]))
-        self.tag_configure("result", foreground=theme["RESULT"], font=(font["FONT"], font["FONT_SIZE"]))
-        self.tag_configure("instruction", foreground=theme["INSTRUCTION"], font=(font["FONT"], font["FONT_SIZE"]))
+        self.tag_configure("output", foreground=theme["OUTPUT"])
+        self.tag_configure("error", foreground=theme["ERROR"])
+        self.tag_configure("result", foreground=theme["RESULT"])
+        self.tag_configure("instruction", foreground=theme["INSTRUCTION"])
         
         # Configure syntax highlighting tags
         for token, style in self.style:
