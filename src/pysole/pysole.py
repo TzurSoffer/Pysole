@@ -281,13 +281,9 @@ class InteractiveConsole(ctk.CTk):
         self.console.newline()
         self.console.writeOutput(m, "instruction")
         time.sleep(0.1)
-        if self.runRemainingCode:
-            if self.printStartupCode:
-                self.console.addPrompt()
-            else:
-                self.console.newline()
-        else:
-            self.console.addPrompt()
+        self.console.addPrompt()
+        if self.runRemainingCode and self.printStartupCode == False:
+            self.console.newline()
     
     def _splitCodeIntoChunks(self):
         codeChunks = []
@@ -320,17 +316,18 @@ class InteractiveConsole(ctk.CTk):
         if self.runRemainingCode == False:
             return
 
-        if self.printStartupCode == False:
-            self.console.newline()
-            code = "\n".join(self.startupCode)
-            self.console.executeCommandThreaded(code, addPrompt=True)
-            return
-        
+        # if self.printStartupCode == False:
+        #     self.console.newline()
         chunks = self._splitCodeIntoChunks()
         for chunk in chunks:
             while self.console.isExecuting:
                 time.sleep(0.01)
-            self.console.runCommand(chunk, printCommand=True, clearPrompt=True)
+            if self.printStartupCode == False:
+                self.console.executeCommandThreaded(chunk, addPrompt=False)
+            else:
+                self.console.runCommand(chunk, printCommand=True, clearPrompt=True)
+        if self.printStartupCode == False:
+            self.console.addPrompt()
 
     def probe(self, *args, **kwargs):
         """Start the console main loop."""

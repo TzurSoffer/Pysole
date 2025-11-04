@@ -347,13 +347,20 @@ class InteractiveConsoleText(StyledTextWindow):
         
         return(currentIndent)
 
-    def writeOutput(self, text, tag="output", loc="end"):
+    def writeOutput(self, text, tag="output", loc="end", timeout=None):
         """Write output to the console (thread-safe)."""
+        doneEvent = threading.Event()
+
         def _write():
-            self.insert(loc, text + "\n", tag)
-            self.see("end")
-        
+            try:
+                self.insert(loc, text + "\n", tag)
+                self.see("end")
+            finally:
+                doneEvent.set()  # Signal completion
+
         self.after(0, _write)
+
+        doneEvent.wait(timeout)
     
     def newline(self):
         """Insert a newline at the end."""
