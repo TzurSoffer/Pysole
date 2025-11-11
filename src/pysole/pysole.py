@@ -7,6 +7,7 @@ import inspect
 import sys
 import io
 import json
+import signal
 
 from .utils import settingsPath, themesPath, stdPrint, normalizeWhitespace, findUnindentedLine
 from .helpTab import HelpTab
@@ -80,6 +81,14 @@ class InteractiveConsole(ctk.CTk):
         # Create UI
         self._createMenu()
         self._createUi()
+
+        self.protocol("WM_DELETE_WINDOW", self.onClose)   #< Wire up window close button (X)
+        
+        # Set up signal handler for Ctrl+C from terminal to close gracefully
+        def sigint_handler(signum, frame):
+            self.onClose()
+        
+        signal.signal(signal.SIGINT, sigint_handler)
 
         # Redirect stdout/stderr
         self._setupOutputRedirect()
@@ -316,8 +325,8 @@ class InteractiveConsole(ctk.CTk):
         if self.runRemainingCode == False:
             return
 
-        # if self.printStartupCode == False:
-        #     self.console.newline()
+        if self.printStartupCode == False:
+            self.console.newline()
         chunks = self._splitCodeIntoChunks()
         for chunk in chunks:
             while self.console.isExecuting:
